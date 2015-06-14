@@ -1,0 +1,23 @@
+{
+  "name": "robe",
+  "main": "./lib/robe",
+  "version": "0.1.0",
+  "description": "Robe ruby completion for atom.",
+  "keywords": [
+  ],
+  "repository": "https://github.com/ypresto/robe-atom",
+  "license": "MIT",
+  "engines": {
+    "atom": ">=0.174.0 <2.0.0"
+  },
+  "dependencies": {
+    "jquery": "^2"
+  },
+  "providedServices": {
+    "autocomplete.provider": {
+      "versions": {
+        "2.0.0": "getProvider"
+      }
+    }
+  }
+}
