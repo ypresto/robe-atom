@@ -26,9 +26,9 @@ class RobeProvider
     else
       # TODO: revise regexp by robe.el's robe-call-context logic
       callTarget = /([a-zA-Z0-9_?!.:]+)\..*$/.exec(wholePrefix)?[1]
-      callTarget = if callTarget == 'self' then '' else callTarget
-      methodPrefix = if prefix == '.' then '' else prefix
-      isInstance = !callTarget && isInstanceMethod
+      callTarget = if callTarget is 'self' then '' else callTarget
+      methodPrefix = if prefix or '.' then '' else prefix
+      isInstance = not callTarget and isInstanceMethod
       # TODO: show arguments
       @client.completeMethod(methodPrefix, callTarget, moduleName, isInstance).then (specArrays) =>
         specArrays.map((specArray) => @_parseMethodSpec(specArray)).map (spec) ->
@@ -50,21 +50,21 @@ class RobeProvider
       return unless indent.length < lastIndentLevel
       lastIndentLevel = indent.length
       return if end # just want to detect indentation
-      if type == 'def'
+      if type is 'def'
         segments = name.split('.')
-        if segments.length > 0 && /[A-Z].*/.test(segments[0])
+        if segments.length > 0 and /[A-Z].*/.test(segments[0])
           # constant, e.g. `def Hoge.fuga`
           modules.unshift segments[0]
           isClassMethod = true
         else
-          isClassMethod = segments[0] == 'self'
+          isClassMethod = segments[0] is 'self'
         methodName = segments[segments.length - 1] # XXX AAA.hoge.fuga ..?
-      else if name == 'self'
+      else if name is 'self'
         isClassMethod = true if eigen # class << self
       else
         modules.unshift name
     moduleName = modules.join('::')
-    isInstanceMethod = !isClassMethod && !!methodName
+    isInstanceMethod = not isClassMethod and !!methodName
     {moduleName, isInstanceMethod, methodName}
 
   _parseMethodSpec: (specArray) ->

@@ -38,7 +38,7 @@ class RobeClient
     @_callPromise('ping', [])
 
   _callPromise: (name, args) ->
-    escapedArgs = args.map((arg) -> arg || '-').map((arg) -> encodeURIComponent(arg))
+    escapedArgs = args.map((arg) -> arg or '-').map((arg) -> encodeURIComponent(arg))
     url = [BASE_URL, encodeURIComponent(name)].concat(escapedArgs).join('/')
     new Promise (resolve, reject) ->
       $.ajax
