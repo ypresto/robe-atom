@@ -3,13 +3,12 @@ path = require 'path'
 
 module.exports =
 class RobeRunner
-  LAUNCH_TIMEOUT_SECS = 15
-
   currentPromise: null
   process: null
   isDestroyed: false
   robePath: null
   port: null
+  launchTimeout: 15000
 
   # returns port
   ensureStarted: ->
@@ -21,7 +20,7 @@ class RobeRunner
       port = @port
       timerId = null
       @_createArgs().then ({command, args, options}) =>
-        console.log('Starting robe.')
+        console.log('Starting robe...')
         stdout = (lines) ->
           console.log "Got stdout from robe process: '#{lines}'."
           return if started
@@ -43,9 +42,9 @@ class RobeRunner
           @process = null
         @process = process = new BufferedProcess {command, args, options, stdout, stderr, exit}
         timerId = setTimeout ->
-          console.error "Robe launch timed out after #{LAUNCH_TIMEOUT_SECS} secs, was wating for '\"robe on\"'."
+          console.error "Robe launch timed out after #{@launchTimeout} msecs, was wating for '\"robe on\"'."
           process.kill()
-        , LAUNCH_TIMEOUT_SECS * 1000
+        , @launchTimeout
       .catch (reason) =>
         console.error 'Robe launch failed.', reason
         @currentPromise = null
@@ -63,6 +62,8 @@ class RobeRunner
 
   setPort: (@port) ->
     @stop()
+
+  setLaunchTimeout: (@launchTimeout) ->
 
   _createArgs: ->
     packagePath = atom.packages.getActivePackage('robe').path

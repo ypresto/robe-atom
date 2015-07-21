@@ -14,6 +14,12 @@ module.exports = Robe =
       default: 24969
       minimum: 1
       maximum: 65535
+    launchTimeout:
+      description:
+        'Wait for specified msecs before robe server launches. ' +
+        'You might want longer value if you use large number of gems.'
+      type: 'integer'
+      default: 15000
 
   runner: null
   subscriptions: null
@@ -25,6 +31,8 @@ module.exports = Robe =
       @runner.setRobePath(robePath)
     @subscriptions.add atom.config.observe 'robe.port', (port) =>
       @runner.setPort(port)
+    @subscriptions.add atom.config.observe 'robe.launchTimeout', (launchTimeout) =>
+      @runner.setLaunchTimeout(launchTimeout)
 
   deactivate: ->
     @subscriptions.dispose()
