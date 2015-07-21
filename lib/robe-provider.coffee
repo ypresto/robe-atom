@@ -6,11 +6,16 @@ class RobeProvider
   disableForSelector: '.source.ruby .comment' # TODO
   inclusionPriority: 1
   excludeLowerPriority: true
+  runner: null
+  client: null
 
-  constructor: ->
-    @client = new RobeClient()
+  constructor: (@runner) ->
 
-  # Required: Return a promise, an array of suggestions, or null.
+  _prepareClient: ->
+    @runner.ensureStarted().then (port) =>
+      return @client if @client?.getPort() is port
+      @client = new RobeClient(port)
+
   getSuggestions: ({editor, bufferPosition, prefix}) ->
     startPosition = [bufferPosition.row, 0]
     wholePrefix = editor.getTextInBufferRange([startPosition, bufferPosition])
@@ -18,23 +23,25 @@ class RobeProvider
     {moduleName, isInstanceMethod} = @_currentContext(editor, bufferPosition)
     constantPrefix = /(?:^|\s+)((?:[A-Z][A-Za-z0-9_]*|::)+)$/.exec(wholePrefix)?[1]
     if constantPrefix
-      @client.completeConst(constantPrefix, moduleName).then (constants) ->
-        constants.map (constant) ->
-          text: constant
-          type: 'constant'
-          replacementPrefix: constantPrefix
+      @_prepareClient().then (client) ->
+        client.completeConst(constantPrefix, moduleName).then (constants) ->
+          constants.map (constant) ->
+            text: constant
+            type: 'constant'
+            replacementPrefix: constantPrefix
     else
       # TODO: revise regexp by robe.el's robe-call-context logic
       callTarget = /([a-zA-Z0-9_?!.:]+)\..*$/.exec(wholePrefix)?[1]
       callTarget = if callTarget is 'self' then '' else callTarget
       methodPrefix = if prefix or '.' then '' else prefix
       isInstance = not callTarget and isInstanceMethod
-      # TODO: show arguments
-      @client.completeMethod(methodPrefix, callTarget, moduleName, isInstance).then (specArrays) =>
-        specArrays.map((specArray) => @_parseMethodSpec(specArray)).map (spec) ->
-          text: spec.methodName
-          rightLabel: spec.module
-          type: 'function'
+      @_prepareClient().then (client) =>
+        # TODO: show arguments
+        client.completeMethod(methodPrefix, callTarget, moduleName, isInstance).then (specArrays) =>
+          specArrays.map((specArray) => @_parseMethodSpec(specArray)).map (spec) ->
+            text: spec.methodName
+            rightLabel: spec.module
+            type: 'function'
 
   # Inspired by ruby-mode.el's ruby-add-log-current-method
   _currentContext: (editor, bufferPosition) ->

@@ -2,7 +2,12 @@ $ = require 'jquery'
 
 module.exports =
 class RobeClient
-  BASE_URL = 'http://localhost:24969'
+  BASE_URL = 'http://localhost'
+  port: null
+
+  constructor: (@port) ->
+
+  getPort: -> @port
 
   classLocations: (name, mod) ->
     @_callPromise('class_locations', [name, mod])
@@ -39,7 +44,7 @@ class RobeClient
 
   _callPromise: (name, args) ->
     escapedArgs = args.map((arg) -> arg or '-').map((arg) -> encodeURIComponent(arg))
-    url = [BASE_URL, encodeURIComponent(name)].concat(escapedArgs).join('/')
+    url = [BASE_URL + ":#{@port}", encodeURIComponent(name)].concat(escapedArgs).join('/')
     new Promise (resolve, reject) ->
       $.ajax
         url: url

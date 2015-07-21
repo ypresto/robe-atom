@@ -4,7 +4,8 @@ describe 'RobeProvider', ->
   [provider, buffer, editor] = []
 
   beforeEach ->
-    provider = new RobeProvider()
+    runnerStub = ensureStarted: (-> Promise.resolve(12345))
+    provider = new RobeProvider(runnerStub)
 
     waitsForPromise ->
       atom.project.open().then (value) -> editor = value
