@@ -68,7 +68,7 @@ class RobeRunner
   _createArgs: ->
     packagePath = atom.packages.getActivePackage('robe').path
     launcherPath = path.join(packagePath, 'bin', 'robe_launcher.rb')
-    projectPath = atom.project.getPaths()[0]
+    projectPath = atom.project.getPaths()[0] # TODO: multiple paths
     options = cwd: projectPath
     @_determineCommand(projectPath).then (commandLine) =>
       console.log("Using '#{commandLine}' to start robe for '#{projectPath}'. robePath: #{@robePath}, port: #{@port}")

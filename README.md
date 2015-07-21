@@ -4,23 +4,19 @@ Unofficial implementation of [Robe](https://github.com/dgutov/robe) client for A
 
 # Usage
 
-Currently this plugin does not have robe launcher at the moment.
-Please run one of below snippet in your project root.
-
-For rails:
+Clone robe repo prior to use this plugin.
 
 ```
-ROBE_LIB_PATH=/path/to/robe/lib  bundle exec rails runner 'unless defined? Robe; $:.unshift ENV["ROBE_LIB_PATH"]; require "robe"; end; p Robe.start(24969); sleep 86400'
+mkdir -p ~/github
+git clone https://github.com/dgutov/robe ~/github/robe
 ```
 
-For bundler:
+Please note that robe requires pry to be installed (with bundler).
 
-```
-ROBE_LIB_PATH=/path/to/robe/lib  bundle exec ruby -e 'unless defined? Robe; $:.unshift ENV["ROBE_LIB_PATH"]; require "robe"; end; p Robe.start(24969); sleep 86400'
-```
+# Limitations
 
-These snippet came from robe.el and [inf-ruby.el](https://github.com/nonsequitur/inf-ruby/blob/55559dfaacf58dd26819fbb1ef16d406583ae024/inf-ruby.el#L631).
-Please note that robe requires pry to be installed.
+* Currently only first project path is used.
+* Fuzzy completion is not supported.
 
 # License
 
