@@ -4,8 +4,8 @@ module.exports =
 class RobeProvider
   selector: '.source.ruby'
   disableForSelector: '.source.ruby .comment' # TODO
-  inclusionPriority: 1
-  excludeLowerPriority: true
+  inclusionPriority: 10
+  excludeLowerPriority: false
   runner: null
   client: null
 
