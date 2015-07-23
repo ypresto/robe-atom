@@ -33,7 +33,7 @@ class RobeProvider
       # TODO: revise regexp by robe.el's robe-call-context logic
       callTarget = /([a-zA-Z0-9_?!.:]+)\..*$/.exec(wholePrefix)?[1]
       callTarget = if callTarget is 'self' then '' else callTarget
-      methodPrefix = if prefix or '.' then '' else prefix
+      methodPrefix = if prefix is '.' then '' else prefix
       isInstance = not callTarget and isInstanceMethod
       @_prepareClient().then (client) =>
         # TODO: show arguments
