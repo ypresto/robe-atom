@@ -1,3 +1,6 @@
+## 0.2.2 - Fix method completion not working
+* Fatal mistake on code style change caused this...
+
 ## 0.2.1 - Update README.md only
 * Just forgot to update README.md about launcher...
 
