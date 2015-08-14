@@ -26,32 +26,36 @@ class RobeRunner
           return if started
           if lines.split('\n').indexOf('"robe on"') >= 0
             started = true
-            clearTimeout timerId
+            clearTimeout(timerId)
             resolve(port)
         stderr = (lines) ->
           console.warn "Got stderr from robe process: '#{lines}'."
-        exit = (code) =>
+        exit = (code) ->
           message = "Robe process exited with code #{code}."
           if started
             console.log message
-          else
-            console.error message
-            clearTimeout timerId
-            reject(message)
-          @currentPromise = null
-          @process = null
-        @process = process = new BufferedProcess {command, args, options, stdout, stderr, exit}
+            return
+          clearTimeout(timerId)
+          atom.notifications.addError message, dismissable: true
+          reject(new Error(message))
+        @process = new BufferedProcess {command, args, options, stdout, stderr, exit}
+        launchTimeout = @launchTimeout
         timerId = setTimeout ->
-          console.error "Robe launch timed out after #{@launchTimeout} msecs, was wating for '\"robe on\"'."
-          process.kill()
-        , @launchTimeout
-      .catch (reason) =>
-        console.error 'Robe launch failed.', reason
-        @currentPromise = null
-        reject(reason)
+          message = "Robe launch timedout after waiting #{launchTimeout} msecs, was wating for '\"robe on\"'."
+          atom.notifications.addError message, dismissable: true
+          reject(new Error(message))
+        , launchTimeout
+        @process.onWillThrowError ({error, handle}) ->
+          clearTimeout(timerId)
+          reject(error)
+    .catch (reason) =>
+      @stop()
+      throw reason
 
   stop: ->
+    @currentPromise = null
     @process?.kill()
+    @process = null
 
   destroy: ->
     isDestroyed = true
