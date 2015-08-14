@@ -1,5 +1,6 @@
 RobeProvider = require './robe-provider'
 RobeRunner = require './robe-runner'
+RobeClientFactory = require './robe-client-factory'
 {CompositeDisposable} = require 'atom'
 
 module.exports = Robe =
@@ -21,26 +22,32 @@ module.exports = Robe =
       type: 'integer'
       default: 15000
 
-  runner: null
   subscriptions: null
+  runner: null
+  clientFactory: null
 
   activate: (state) ->
     @subscriptions = new CompositeDisposable
     @runner = new RobeRunner
     @subscriptions.add atom.config.observe 'robe.robePath', (robePath) =>
+      console.log("robePath: #{robePath}")
       @runner.setRobePath(robePath)
     @subscriptions.add atom.config.observe 'robe.port', (port) =>
+      console.log("port: #{port}")
       @runner.setPort(port)
     @subscriptions.add atom.config.observe 'robe.launchTimeout', (launchTimeout) =>
+      console.log("launchTimeout: #{launchTimeout}")
       @runner.setLaunchTimeout(launchTimeout)
+    @clientFactory = new RobeClientFactory(@runner)
 
   deactivate: ->
     @subscriptions.dispose()
     @subscriptions = null
+    @clientFactory = null
     @runner.destroy()
     @runner = null
 
   serialize: ->
 
   getProvider: ->
-    new RobeProvider(@runner)
+    new RobeProvider(@clientFactory)

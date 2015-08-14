@@ -1,12 +1,9 @@
-RobeProvider = require '../lib/robe-provider'
+RobeEditorUtil = require '../lib/robe-editor-util'
 
-describe 'RobeProvider', ->
-  [provider, buffer, editor] = []
+describe 'RobeEditorUtil', ->
+  [buffer, editor] = []
 
   beforeEach ->
-    runnerStub = ensureStarted: (-> Promise.resolve(12345))
-    provider = new RobeProvider(runnerStub)
-
     waitsForPromise ->
       atom.project.open().then (value) -> editor = value
 
@@ -22,17 +19,17 @@ describe 'RobeProvider', ->
 
     it 'returns method name and class name of specified position', ->
       editor.setText plain
-      expect(provider._currentContext(editor, [2, 10])) # curren*t_context
+      expect(RobeEditorUtil.currentContext(editor, [2, 10])) # curren*t_context
         .toEqual(moduleName: 'SomeClass', isInstanceMethod: true, methodName: 'method')
 
     it 'does not return methodName when cursor is overlapped with def statement', ->
       editor.setText plain
-      expect(provider._currentContext(editor, [1, 11])) # def metho*dA
+      expect(RobeEditorUtil.currentContext(editor, [1, 11])) # def metho*dA
         .toEqual(moduleName: 'SomeClass', isInstanceMethod: false, methodName: null)
 
     it 'does not return methodName when cursor is outside of end statement of def', ->
       editor.setText plain
-      expect(provider._currentContext(editor, [4, 0])) # *end
+      expect(RobeEditorUtil.currentContext(editor, [4, 0])) # *end
         .toEqual(moduleName: 'SomeClass', isInstanceMethod: false, methodName: null)
 
     it 'returns nested class name using "::"', ->
@@ -45,7 +42,7 @@ describe 'RobeProvider', ->
         end
         '''
       )
-      expect(provider._currentContext(editor, [2, 0])) # *    before_validation
+      expect(RobeEditorUtil.currentContext(editor, [2, 0])) # *    before_validation
         .toEqual(moduleName: 'Foo::Bar::NestedClass', isInstanceMethod: false, methodName: null)
 
     it 'does not include sibling inner class in moduleName', ->
@@ -63,7 +60,7 @@ describe 'RobeProvider', ->
         end
         '''
       )
-      expect(provider._currentContext(editor, [7, 19])) # current_conte*xt
+      expect(RobeEditorUtil.currentContext(editor, [7, 19])) # current_conte*xt
         .toEqual(moduleName: 'SomeClass', isInstanceMethod: true, methodName: 'another_method')
 
     it 'detects class method when cursor is in "self." prefixed method def', ->
@@ -75,7 +72,7 @@ describe 'RobeProvider', ->
         end
         '''
       )
-      expect(provider._currentContext(editor, [2, 0])) # *  end
+      expect(RobeEditorUtil.currentContext(editor, [2, 0])) # *  end
         .toEqual(moduleName: 'SomeClass', isInstanceMethod: false, methodName: 'class_method')
 
     it 'detects class method when cursor is in "Constant." prefixed method def', ->
@@ -85,7 +82,7 @@ describe 'RobeProvider', ->
         end
         '''
       )
-      expect(provider._currentContext(editor, [1, 0])) # *end
+      expect(RobeEditorUtil.currentContext(editor, [1, 0])) # *end
         .toEqual(moduleName: 'OtherClass', isInstanceMethod: false, methodName: 'another_class_method')
 
     it 'detects class method when using eigenclass by "class << self"', ->
@@ -99,5 +96,5 @@ describe 'RobeProvider', ->
         end
         '''
       )
-      expect(provider._currentContext(editor, [3, 0])) # *    end (matching def class_methdo)
+      expect(RobeEditorUtil.currentContext(editor, [3, 0])) # *    end (matching def class_methdo)
         .toEqual(moduleName: 'OtherClass', isInstanceMethod: false, methodName: 'class_method')
