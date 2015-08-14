@@ -7,7 +7,6 @@ class RobeRunner
   process: null
   isDestroyed: false
   robePath: null
-  port: null
   launchTimeout: 15000
 
   # returns port
@@ -17,17 +16,20 @@ class RobeRunner
     @currentPromise = new Promise (resolve, reject) =>
       # TODO: launch timeout
       started = false
-      port = @port
       timerId = null
       @_createArgs().then ({command, args, options}) =>
         console.log('Starting robe...')
         stdout = (lines) ->
           console.log "Got stdout from robe process: '#{lines}'."
           return if started
-          if lines.split('\n').indexOf('"robe on"') >= 0
+          for line in lines.split('\n')
+            match = line.match /^"robe on ([1-9][0-9]*)"$/
+            continue unless match?
+            port = match[1]
             started = true
             clearTimeout(timerId)
             resolve(port)
+            break
         stderr = (lines) ->
           console.warn "Got stderr from robe process: '#{lines}'."
         exit = (code) ->
@@ -64,9 +66,6 @@ class RobeRunner
   setRobePath: (@robePath) ->
     @stop()
 
-  setPort: (@port) ->
-    @stop()
-
   setLaunchTimeout: (@launchTimeout) ->
 
   _createArgs: ->
@@ -75,10 +74,10 @@ class RobeRunner
     projectPath = atom.project.getPaths()[0] # TODO: multiple paths
     options = cwd: projectPath
     @_determineCommand(projectPath).then (commandLine) =>
-      console.log("Using '#{commandLine}' to start robe for '#{projectPath}'. robePath: #{@robePath}, port: #{@port}")
+      console.log("Using '#{commandLine}' to start robe for '#{projectPath}'. robePath: #{@robePath}")
       commandArgs = commandLine.split(' ')
       command = commandArgs[0]
-      args = commandArgs[1..].concat(launcherPath, @robePath, @port)
+      args = commandArgs[1..].concat(launcherPath, @robePath)
       {command, args, options}
 
   _determineCommand: (projectPath) ->

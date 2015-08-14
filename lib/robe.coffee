@@ -9,12 +9,6 @@ module.exports = Robe =
       description: 'Please `git clone https://github.com/dgutov/robe.git` first.'
       type: 'string'
       default: '~/github/robe'
-    port:
-      description: 'Launch robe server on this port.'
-      type: 'integer'
-      default: 24969
-      minimum: 1
-      maximum: 65535
     launchTimeout:
       description:
         'Wait for specified msecs before robe server launches. ' +
@@ -32,9 +26,6 @@ module.exports = Robe =
     @subscriptions.add atom.config.observe 'robe.robePath', (robePath) =>
       console.log("robePath: #{robePath}")
       @runner.setRobePath(robePath)
-    @subscriptions.add atom.config.observe 'robe.port', (port) =>
-      console.log("port: #{port}")
-      @runner.setPort(port)
     @subscriptions.add atom.config.observe 'robe.launchTimeout', (launchTimeout) =>
       console.log("launchTimeout: #{launchTimeout}")
       @runner.setLaunchTimeout(launchTimeout)
