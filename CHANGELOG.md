@@ -1,3 +1,8 @@
+## 0.3.0 - Use port randomization
+* Bump to latest robe interface
+* Removed port configuration
+* Now you can use robe in multiple windows (without port conflict)!
+
 ## 0.2.2 - Fix method completion not working
 * Fatal mistake on code style change caused this...
 
