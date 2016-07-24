@@ -2,16 +2,17 @@
 
 Unofficial implementation of [Robe](https://github.com/dgutov/robe) client for Atom.
 
-# Usage
+# Installation
 
-Clone robe repo prior to use this plugin.
+Install [autocomplete-plus](https://github.com/atom/autocomplete-plus) and robe plugins in Atom's prefernces.
+Then clone robe (server) repo to `~/github/robe`.
 
 ```
 mkdir -p ~/github
 git clone https://github.com/dgutov/robe ~/github/robe
 ```
 
-Please note that robe requires pry to be installed (with bundler).
+Please note that robe server requires pry to be installed (with bundler).
 
 # Limitations
 
