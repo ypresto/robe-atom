@@ -55,4 +55,4 @@ class RobeClient
           console.error errorThrown
           reject(textStatus)
         success: (data, textStatus, jqXHR) ->
-          resolve(JSON.parse(data))
+          resolve(data)
