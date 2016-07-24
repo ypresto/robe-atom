@@ -43,7 +43,7 @@ class RobeClient
     @_callPromise('ping', [])
 
   _callPromise: (name, args) ->
-    escapedArgs = args.map((arg) -> arg or '-').map((arg) -> encodeURIComponent(arg))
+    escapedArgs = args.map((arg) => @_formatArg(arg)).map((arg) -> encodeURIComponent(arg))
     url = [BASE_URL + ":#{@port}", encodeURIComponent(name)].concat(escapedArgs).join('/')
     new Promise (resolve, reject) ->
       $.ajax
@@ -56,3 +56,7 @@ class RobeClient
           reject(textStatus)
         success: (data, textStatus, jqXHR) ->
           resolve(data)
+
+  _formatArg: (arg) ->
+    return arg if arg? and arg isnt ''
+    '-'
