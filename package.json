@@ -1,7 +1,7 @@
 {
   "name": "robe",
   "main": "./lib/robe",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Robe ruby completion for atom.",
   "keywords": [
   ],

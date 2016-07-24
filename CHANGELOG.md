@@ -1,3 +1,8 @@
+## 0.4.0 - Restart commands, better error handling
+* Bump to latest robe interface
+* Add restart-server and refresh-rails commands
+* Improve error handling to reduce annoying notifications
+
 ## 0.3.0 - Use port randomization
 * Bump to latest robe interface
 * Removed port configuration
