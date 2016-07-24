@@ -19,7 +19,7 @@ class RobeProvider
     constantPrefix = /(?:^|\s+)((?:[A-Z][A-Za-z0-9_]*|::)+)$/.exec(wholePrefix)?[1]
     if constantPrefix
       @clientFactory.retrieve().then (client) ->
-        client.completeConst(constantPrefix, moduleName).then (constants) ->
+        client?.completeConst(constantPrefix, moduleName).then (constants) ->
           constants.map (constant) ->
             text: constant
             type: 'constant'
@@ -32,7 +32,7 @@ class RobeProvider
       isInstance = not callTarget and isInstanceMethod
       @clientFactory.retrieve().then (client) =>
         # TODO: show arguments
-        client.completeMethod(methodPrefix, callTarget, moduleName, isInstance).then (specArrays) =>
+        client?.completeMethod(methodPrefix, callTarget, moduleName, isInstance).then (specArrays) =>
           specArrays.map((specArray) => @_parseMethodSpec(specArray)).map (spec) ->
             text: spec.methodName
             rightLabel: spec.module

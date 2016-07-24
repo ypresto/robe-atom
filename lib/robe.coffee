@@ -1,6 +1,7 @@
 RobeProvider = require './robe-provider'
 RobeRunner = require './robe-runner'
 RobeClientFactory = require './robe-client-factory'
+RobeCommands = require './robe-commands'
 {CompositeDisposable} = require 'atom'
 
 module.exports = Robe =
@@ -30,6 +31,8 @@ module.exports = Robe =
       console.log("launchTimeout: #{launchTimeout}")
       @runner.setLaunchTimeout(launchTimeout)
     @clientFactory = new RobeClientFactory(@runner)
+    @commands = new RobeCommands(@clientFactory)
+    @subscriptions.add @commands.registerToAtom()
 
   deactivate: ->
     @subscriptions.dispose()

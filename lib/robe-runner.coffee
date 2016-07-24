@@ -1,4 +1,4 @@
-{BufferedProcess, File} = require 'atom'
+{BufferedProcess, File, CompositeDisposable} = require 'atom'
 path = require 'path'
 
 module.exports =
@@ -8,59 +8,80 @@ class RobeRunner
   isDestroyed: false
   robePath: null
   launchTimeout: 15000
+  started: false
+  subscriptions: new CompositeDisposable
+  lastNotification: null
+  _hasError: false
+
+  isStarted: -> @started
+  hasError: -> @_hasError
 
   # returns port
   ensureStarted: ->
     return Promise.reject 'Already destroyed.' if @isDestroyed
     return @currentPromise if @currentPromise
+    @lastNotification?.dismiss()
+
+    @_setLastNotification atom.notifications.addInfo('Starting robe server...', dismissable: true)
+
+    @started = false
     @currentPromise = new Promise (resolve, reject) =>
-      # TODO: launch timeout
-      started = false
       timerId = null
       @_createArgs().then ({command, args, options}) =>
-        console.log('Starting robe...')
-        stdout = (lines) ->
+        stdout = (lines) =>
           console.log "Got stdout from robe process: '#{lines}'."
-          return if started
+          return if @started
           for line in lines.split('\n')
             match = line.match /^"robe on ([1-9][0-9]*)"$/
             continue unless match?
             port = match[1]
-            started = true
+            @started = true
+            @lastNotification.dismiss()
             clearTimeout(timerId)
             resolve(port)
             break
         stderr = (lines) ->
           console.warn "Got stderr from robe process: '#{lines}'."
-        exit = (code) ->
+        exit = (code) =>
           message = "Robe process exited with code #{code}."
-          if started
+          if @started
             console.log message
             return
           clearTimeout(timerId)
-          atom.notifications.addError message, dismissable: true
           reject(new Error(message))
         @process = new BufferedProcess {command, args, options, stdout, stderr, exit}
         launchTimeout = @launchTimeout
         timerId = setTimeout ->
           message = "Robe launch timedout after waiting #{launchTimeout} msecs, was wating for '\"robe on\"'."
-          atom.notifications.addError message, dismissable: true
           reject(new Error(message))
         , launchTimeout
         @process.onWillThrowError ({error, handle}) ->
           clearTimeout(timerId)
           reject(error)
     .catch (reason) =>
-      @stop()
-      throw reason
+      console.error(reason)
+      @_hasError = true
+      @_stopImpl()
+      @_setLastNotification atom.notifications.addWarning(
+        "Error while starting robe process, you should restart it manually. Reason: #{reason.message}",
+        dismissable: true
+      )
+      Promise.reject(reason)
 
   stop: ->
+    @_stopImpl()
     @currentPromise = null
+    @_hasError = false
+
+  _stopImpl: ->
     @process?.kill()
     @process = null
+    @started = false
 
   destroy: ->
-    isDestroyed = true
+    @isDestroyed = true
+    @lastNotification?.dismiss()
+    @subscriptions.dispose()
     @stop()
 
   setRobePath: (@robePath) ->
@@ -103,3 +124,10 @@ class RobeRunner
       configApplicationFile.read()
     .then (content) ->
       !!content.match /(\s|^)Rails::Application(\s|$)/
+
+  _setLastNotification: (notification) ->
+    @lastNotification?.dismiss()
+    @lastNotification = notification
+    @subscriptions.add notification.onDidDismiss =>
+      if @lastNotification is notification
+        @lastNotification = null
