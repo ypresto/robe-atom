@@ -1,3 +1,6 @@
+## 0.4.1 - Fix class method completion is not working
+* Fix the issue
+
 ## 0.4.0 - Restart commands, better error handling
 * Bump to latest robe interface
 * Add restart-server and refresh-rails commands
