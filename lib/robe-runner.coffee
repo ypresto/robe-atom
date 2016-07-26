@@ -46,6 +46,7 @@ class RobeRunner
           message = "Robe process exited with code #{code}."
           if @started
             console.log message
+            @stop()
             return
           clearTimeout(timerId)
           reject(new Error(message))
