@@ -58,5 +58,6 @@ class RobeClient
           resolve(data)
 
   _formatArg: (arg) ->
-    return arg if arg? and arg isnt ''
-    '-'
+    return 'yes' if arg is true
+    return '-' if arg is false or not arg?
+    arg
