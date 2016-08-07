@@ -1,3 +1,6 @@
+## 0.4.2 - Fix completion is not working
+* Fix client does not escaping empty string
+
 ## 0.4.1 - Fix class method completion is not working
 * Fix the issue
 
