@@ -59,5 +59,5 @@ class RobeClient
 
   _formatArg: (arg) ->
     return 'yes' if arg is true
-    return '-' if arg is false or not arg?
+    return '-' if arg is false or arg is '' or not arg?
     arg
