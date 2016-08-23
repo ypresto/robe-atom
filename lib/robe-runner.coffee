@@ -36,7 +36,7 @@ class RobeRunner
             continue unless match?
             port = match[1]
             @started = true
-            @lastNotification.dismiss()
+            @lastNotification?.dismiss()
             clearTimeout(timerId)
             resolve(port)
             break
