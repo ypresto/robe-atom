@@ -1,3 +1,6 @@
+## 0.4.3 - Fix freeze at long upper case constant
+* Fix poor regexp performance with long upper case constant name
+
 ## 0.4.2 - Fix completion is not working
 * Fix client does not escaping empty string
 
