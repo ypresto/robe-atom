@@ -16,7 +16,7 @@ class RobeProvider
     wholePrefix = editor.getTextInBufferRange([startPosition, bufferPosition])
     # resolve [] unless match?
     {moduleName, isInstanceMethod} = RobeEditorUtil.currentContext(editor, bufferPosition)
-    constantPrefix = /(?:^|\s+)((?:[A-Z][A-Za-z0-9_]*|::)+)$/.exec(wholePrefix)?[1]
+    constantPrefix = /(?:^|\s+)([A-Z][A-Za-z0-9_]*(?:::[A-Z][A-Za-z0-9_]*)*)$/.exec(wholePrefix)?[1]
     if constantPrefix
       @clientFactory.retrieve().then (client) ->
         client?.completeConst(constantPrefix, moduleName).then (constants) ->
