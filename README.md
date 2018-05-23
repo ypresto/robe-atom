@@ -2,6 +2,12 @@
 
 Unofficial implementation of [Robe](https://github.com/dgutov/robe) client for Atom.
 
+# UNMAINTAINED
+
+Now I'm using VSCode instead of Atom. So I'm not using this plugin anymore. VSCode is pretty fast and sophisticated editor. :)
+
+FYI There is similar extensions for VSCode: [vscode-ruby](https://github.com/rubyide/vscode-ruby) and [solargraph](https://github.com/castwide/solargraph).
+
 # Installation
 
 Install [autocomplete-plus](https://github.com/atom/autocomplete-plus) and robe plugins in Atom's prefernces.
